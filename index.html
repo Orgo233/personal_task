@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CYBER_CORE // Personal Hub & Dev Dashboard</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: JetBrains Mono & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Tone.js for clean sci-fi micro-interactions -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            cyber: {
+              bg: '#080b11',
+              card: 'rgba(15, 23, 42, 0.75)',
+              border: 'rgba(56, 189, 248, 0.2)',
+              cyan: '#00f2fe',
+              neon: '#38bdf8',
+              emerald: '#10b981',
+              violet: '#8b5cf6',
+              amber: '#f59e0b',
+              rose: '#f43f5e'
+            }
+          },
+          fontFamily: {
+            mono: ['"Fira Code"', 'monospace'],
+            sans: ['Inter', 'sans-serif']
+          },
+          boxShadow: {
+            'glow-cyan': '0 0 20px -3px rgba(0, 242, 254, 0.35)',
+            'glow-violet': '0 0 20px -3px rgba(139, 92, 246, 0.35)',
+            'glow-emerald': '0 0 20px -3px rgba(16, 185, 129, 0.35)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #080b11;
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+    
+    /* Cyber Grid Matrix Background */
+    .cyber-grid {
+      background-image: 
+        linear-gradient(to right, rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+
+    /* Ambient Glow Blobs */
+    .radial-glow-cyan {
+      background: radial-gradient(circle at 50% 50%, rgba(0, 242, 254, 0.12) 0%, transparent 70%);
+    }
+    .radial-glow-violet {
+      background: radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.12) 0%, transparent 70%);
+    }
+
+    /* Scanline Overlay for retro-coder vibe */
+    .scanlines {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+      background-size: 100% 4px;
+      z-index: 99;
+      opacity: 0.35;
+    }
+
+    /* Custom Glass Panel */
+    .glass-card {
+      background: rgba(13, 20, 36, 0.7);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(56, 189, 248, 0.18);
+    }
+    .glass-card:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #080b11;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #0284c7;
+    }
+
+    /* Terminal blink cursor */
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    .cursor-blink {
+      animation: blink 1s infinite;
+    }
+  </style>
+</head>
+<body class="cyber-grid relative min-h-screen text-slate-200">
+  <div class="scanlines"></div>
+
+  <!-- Ambient Light Orbs -->
+  <div class="fixed top-12 left-1/4 w-96 h-96 radial-glow-cyan pointer-events-none -z-10 blur-3xl"></div>
+  <div class="fixed top-1/2 right-10 w-[28rem] h-[28rem] radial-glow-violet pointer-events-none -z-10 blur-3xl"></div>
+
+  <header class="sticky top-0 z-50 border-b border-cyan-500/20 bg-[#080b11]/85 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <!-- Logo & Prompt -->
+      <div class="flex items-center space-x-3">
+        <div class="h-9 w-9 rounded-lg bg-cyan-950/80 border border-cyan-400/40 flex items-center justify-center shadow-glow-cyan">
+          <i data-lucide="terminal" class="w-5 h-5 text-cyan-400"></i>
+        </div>
+        <div>
+          <span class="font-mono text-sm tracking-widest text-cyan-400 font-bold flex items-center gap-1.5">
+            SYS_DEV <span class="text-xs px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/40 font-mono">v3.4</span>
+          </span>
+          <p class="text-[11px] text-slate-400 font-mono hidden sm:block">guest@cyber-universe:~$</p>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center space-x-1 font-mono text-xs">
+        <a href="#overview" class="px-3 py-1.5 rounded-md hover:text-cyan-300 hover:bg-cyan-500/10 transition flex items-center gap-1.5">
+          <i data-lucide="cpu" class="w-3.5 h-3.5 text-cyan-400"></i> //OVERVIEW
+        </a>
+        <a href="#todos" class="px-3 py-1.5 rounded-md hover:text-cyan-300 hover:bg-cyan-500/10 transition flex items-center gap-1.5">
+          <i data-lucide="check-square" class="w-3.5 h-3.5 text-emerald-400"></i> //DAILY_TASKS
+        </a>
+        <a href="#gallery" class="px-3 py-1.5 rounded-md hover:text-cyan-300 hover:bg-cyan-500/10 transition flex items-center gap-1.5">
+          <i data-lucide="image" class="w-3.5 h-3.5 text-violet-400"></i> //GALLERY
+        </a>
+        <a href="#dreams" class="px-3 py-1.5 rounded-md hover:text-cyan-300 hover:bg-cyan-500/10 transition flex items-center gap-1.5">
+          <i data-lucide="compass" class="w-3.5 h-3.5 text-amber-400"></i> //DREAMS
+        </a>
+        <a href="#profile" class="px-3 py-1.5 rounded-md hover:text-cyan-300 hover:bg-cyan-500/10 transition flex items-center gap-1.5">
+          <i data-lucide="user-check" class="w-3.5 h-3.5 text-rose-400"></i> //DOSSIER
+        </a>
+      </nav>
+
+      <!-- System Status & Live Clock -->
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:flex flex-col items-end text-right font-mono">
+          <span id="liveClock" class="text-xs font-semibold text-cyan-300 tracking-wider">00:00:00 UTC</span>
+          <span class="text-[10px] text-emerald-400 flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> ONLINE / BUILDING
+          </span>
+        </div>
+        <button id="soundToggleBtn" onclick="toggleAudio()" title="Sound Effects" class="p-2 rounded-lg bg-slate-900/80 border border-slate-800 text-slate-400 hover:text-cyan-300 hover:border-cyan-500/40 transition">
+          <i data-lucide="volume-2" id="soundIcon" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+    <!-- Hero / Terminal Section -->
+    <section id="overview" class="glass-card rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-2xl">
+      <div class="absolute -right-16 -top-16 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Terminal Window Bar -->
+      <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-800 font-mono text-xs text-slate-400">
+        <div class="flex items-center space-x-2">
+          <span class="w-3 h-3 rounded-full bg-rose-500/80 inline-block"></span>
+          <span class="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
+          <span class="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
+          <span class="ml-2 text-slate-400 font-mono">bash - 120x45</span>
+        </div>
+        <div class="text-[11px] text-cyan-400/80 flex items-center gap-1">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-cyan-400"></i> ENCRYPTED_SESSION
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <!-- Terminal command & Bio -->
+        <div class="lg:col-span-8 space-y-4">
+          <div class="font-mono text-cyan-400 text-sm flex items-center gap-2">
+            <span>root@cyberhub:~$</span>
+            <span class="text-white">whoami --verbose</span>
+          </div>
+
+          <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white font-mono">
+            HELLO, WORLD! <br/>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-indigo-400">
+              SOFTWARE CRAFTSMAN
+            </span>
+            <span class="text-cyan-400 cursor-blink">_</span>
+          </h1>
+
+          <p class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl font-sans">
+            Turning complex problems into clean, resilient software architecture. Welcome to my command deck—where I plan my daily missions, log life moments, cultivate big dreams, and document the tech journey.
+          </p>
+
+          <div class="flex flex-wrap gap-2 pt-2">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-cyan-950/60 text-cyan-300 border border-cyan-500/30">
+              <i data-lucide="code" class="w-3.5 h-3.5"></i> Full-Stack & Systems
+            </span>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-violet-950/60 text-violet-300 border border-violet-500/30">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Cyberpunk Aesthetics
+            </span>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-emerald-950/60 text-emerald-300 border border-emerald-500/30">
+              <i data-lucide="target" class="w-3.5 h-3.5"></i> Relentless Goal Execution
+            </span>
+          </div>
+        </div>
+
+        <!-- Quick Telemetry Stats Cards -->
+        <div class="lg:col-span-4 grid grid-cols-2 gap-3 font-mono">
+          <div class="bg-slate-900/90 border border-slate-800 hover:border-cyan-500/50 p-4 rounded-xl transition group">
+            <div class="flex items-center justify-between text-slate-400 mb-1">
+              <span class="text-xs">COMMITS</span>
+              <i data-lucide="git-commit" class="w-4 h-4 text-cyan-400 group-hover:rotate-12 transition-transform"></i>
+            </div>
+            <div class="text-2xl font-bold text-white tracking-tight">1,842+</div>
+            <div class="text-[10px] text-cyan-400/80 mt-1">This cycle</div>
+          </div>
+
+          <div class="bg-slate-900/90 border border-slate-800 hover:border-emerald-500/50 p-4 rounded-xl transition group">
+            <div class="flex items-center justify-between text-slate-400 mb-1">
+              <span class="text-xs">TASKS DONE</span>
+              <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform"></i>
+            </div>
+            <div id="statCompletedCount" class="text-2xl font-bold text-white tracking-tight">0</div>
+            <div class="text-[10px] text-emerald-400/80 mt-1">Daily tracker</div>
+          </div>
+
+          <div class="bg-slate-900/90 border border-slate-800 hover:border-amber-500/50 p-4 rounded-xl transition group">
+            <div class="flex items-center justify-between text-slate-400 mb-1">
+              <span class="text-xs">COFFEE / HRS</span>
+              <i data-lucide="coffee" class="w-4 h-4 text-amber-400 group-hover:translate-y-[-2px] transition-transform"></i>
+            </div>
+            <div class="text-2xl font-bold text-white tracking-tight">640 <span class="text-xs font-normal text-slate-400">cups</span></div>
+            <div class="text-[10px] text-amber-400/80 mt-1">Fuel consumed</div>
+          </div>
+
+          <div class="bg-slate-900/90 border border-slate-800 hover:border-violet-500/50 p-4 rounded-xl transition group">
+            <div class="flex items-center justify-between text-slate-400 mb-1">
+              <span class="text-xs">DREAMS</span>
+              <i data-lucide="flag" class="w-4 h-4 text-violet-400 group-hover:scale-110 transition-transform"></i>
+            </div>
+            <div id="statDreamsCount" class="text-2xl font-bold text-white tracking-tight">4</div>
+            <div class="text-[10px] text-violet-400/80 mt-1">Quests locked</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="todos" class="glass-card rounded-2xl p-6 sm:p-8 space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded bg-emerald-400 shadow-glow-emerald"></span>
+            <h2 class="text-xl font-bold text-white font-mono tracking-wide flex items-center gap-2">
+              DAILY_LIFE // TASK_QUEUE.sh
+            </h2>
+          </div>
+          <p class="text-xs text-slate-400 font-mono mt-1">Active process loop & daily habit compiler. Syncs to localStorage.</p>
+        </div>
+
+        <!-- Filter Tabs & Task Counter -->
+        <div class="flex items-center flex-wrap gap-2 font-mono text-xs">
+          <button onclick="setFilter('all')" id="filter-all" class="px-3 py-1.5 rounded-lg border border-cyan-500/40 bg-cyan-500/20 text-cyan-300 transition">
+            ALL (<span id="count-all">0</span>)
+          </button>
+          <button onclick="setFilter('active')" id="filter-active" class="px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white transition">
+            RUNNING (<span id="count-active">0</span>)
+          </button>
+          <button onclick="setFilter('completed')" id="filter-completed" class="px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white transition">
+            RESOLVED (<span id="count-completed">0</span>)
+          </button>
+        </div>
+      </div>
+
+      <!-- Daily Progress Metric Bar -->
+      <div class="space-y-2">
+        <div class="flex justify-between text-xs font-mono">
+          <span class="text-slate-400 flex items-center gap-1.5">
+            <i data-lucide="activity" class="w-3.5 h-3.5 text-emerald-400"></i> MISSION EFFICIENCY RATIO
+          </span>
+          <span id="progressText" class="text-emerald-400 font-bold">0% COMPLETED</span>
+        </div>
+        <div class="w-full bg-slate-900 rounded-full h-2.5 overflow-hidden border border-slate-800">
+          <div id="progressBar" class="h-full bg-gradient-to-r from-cyan-500 to-emerald-400 transition-all duration-500 w-0 rounded-full shadow-glow-emerald"></div>
+        </div>
+      </div>
+
+      <!-- Add New Task Form -->
+      <form id="todoForm" onsubmit="handleAddTask(event)" class="bg-slate-900/70 p-4 rounded-xl border border-slate-800 space-y-3">
+        <div class="flex flex-col sm:flex-row gap-3">
+          <div class="relative flex-1">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500 font-mono text-xs">
+              <i data-lucide="plus-circle" class="w-4 h-4 text-cyan-400"></i>
+            </div>
+            <input 
+              type="text" 
+              id="taskInput" 
+              placeholder="Inject new task (e.g., Code 2 LeetCode questions, 30m gym, read system paper)..." 
+              required
+              class="w-full pl-9 pr-3 py-2.5 rounded-lg bg-slate-950/80 border border-slate-800 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 text-slate-200 placeholder-slate-500 text-sm font-sans transition outline-none"
+            />
+          </div>
+
+          <div class="flex items-center gap-2">
+            <!-- Category Selection -->
+            <select id="taskCategory" class="bg-slate-950/80 border border-slate-800 rounded-lg px-3 py-2.5 text-xs font-mono text-slate-300 focus:border-cyan-400 outline-none">
+              <option value="Code">📁 [CODE]</option>
+              <option value="Study">📚 [STUDY]</option>
+              <option value="Life">☕ [LIFE]</option>
+              <option value="Health">⚡ [HEALTH]</option>
+            </select>
+
+            <!-- Priority Selection -->
+            <select id="taskPriority" class="bg-slate-950/80 border border-slate-800 rounded-lg px-3 py-2.5 text-xs font-mono text-slate-300 focus:border-cyan-400 outline-none">
+              <option value="High">🔴 High Pri</option>
+              <option value="Medium" selected>🟡 Mid Pri</option>
+              <option value="Low">🟢 Low Pri</option>
+            </select>
+
+            <button type="submit" class="px-5 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold font-mono text-xs tracking-wider transition-all duration-200 shadow-glow-cyan flex items-center gap-1.5 whitespace-nowrap">
+              <span>DEPLOY</span>
+              <i data-lucide="corner-down-left" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Task Items Container -->
+      <div id="todoList" class="space-y-2.5 min-h-[140px]">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <section id="gallery" class="glass-card rounded-2xl p-6 sm:p-8 space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded bg-violet-400 shadow-glow-violet"></span>
+            <h2 class="text-xl font-bold text-white font-mono tracking-wide flex items-center gap-2">
+              VISUAL_ARCHIVE // PHOTO_GALLERY
+            </h2>
+          </div>
+          <p class="text-xs text-slate-400 font-mono mt-1">Snapshots from daily battle stations, adventures, and memorable frames.</p>
+        </div>
+
+        <!-- Add Photo Trigger Button & Filter -->
+        <div class="flex items-center flex-wrap gap-2">
+          <div class="flex items-center gap-1 bg-slate-900/80 p-1 rounded-lg border border-slate-800 text-xs font-mono">
+            <button onclick="filterGallery('All')" class="gallery-filter-btn px-2.5 py-1 rounded bg-violet-600/30 text-violet-300 border border-violet-500/40" data-cat="All">All</button>
+            <button onclick="filterGallery('Workspace')" class="gallery-filter-btn px-2.5 py-1 rounded text-slate-400 hover:text-white" data-cat="Workspace">Workspaces</button>
+            <button onclick="filterGallery('Life & Travel')" class="gallery-filter-btn px-2.5 py-1 rounded text-slate-400 hover:text-white" data-cat="Life & Travel">Travel & Life</button>
+            <button onclick="filterGallery('Creative')" class="gallery-filter-btn px-2.5 py-1 rounded text-slate-400 hover:text-white" data-cat="Creative">Creative</button>
+          </div>
+          <button onclick="openAddPhotoModal()" class="px-3.5 py-2 rounded-lg bg-violet-600/20 border border-violet-500/40 hover:bg-violet-600/30 text-violet-300 font-mono text-xs flex items-center gap-1.5 transition">
+            <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+            <span>INJECT PHOTO</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Photo Grid -->
+      <div id="galleryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <section id="profile" class="glass-card rounded-2xl p-6 sm:p-8 space-y-8">
+      <div class="border-b border-slate-800/80 pb-5">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded bg-rose-400"></span>
+          <h2 class="text-xl font-bold text-white font-mono tracking-wide flex items-center gap-2">
+            DEV_DOSSIER // PERSONAL_IDENTITY
+          </h2>
+        </div>
+        <p class="text-xs text-slate-400 font-mono mt-1">Identity verification, technical proficiencies & core tenets.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Bio Card -->
+        <div class="lg:col-span-5 bg-slate-900/80 border border-slate-800/90 rounded-xl p-6 space-y-6 relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-xl pointer-events-none"></div>
+          
+          <div class="flex items-center gap-4">
+            <div class="relative">
+              <img 
+                src="https://images.unsplash.com/photo-1534972195531-a756b1126f24?w=400&auto=format&fit=crop&q=80" 
+                alt="Avatar"
+                class="w-20 h-20 rounded-xl object-cover border-2 border-cyan-400/50 shadow-glow-cyan"
+                onerror="this.src='https://placehold.co/150x150/0f172a/38bdf8?text=AVATAR'"
+              />
+              <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-slate-900 flex items-center justify-center" title="Ready to hack"></span>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="text-lg font-bold text-white font-mono">ARIF RAHMAN</h3>
+                <i data-lucide="badge-check" class="w-4 h-4 text-cyan-400"></i>
+              </div>
+              <p class="text-xs text-cyan-400 font-mono">SYS_ARCHITECT / CODER</p>
+              <p class="text-xs text-slate-400 mt-1 flex items-center gap-1 font-mono">
+                <i data-lucide="map-pin" class="w-3 h-3 text-rose-400"></i> Sylhet, Bangladesh
+              </p>
+            </div>
+          </div>
+
+          <div class="space-y-2 border-t border-b border-slate-800 py-4 text-xs font-mono">
+            <div class="flex justify-between">
+              <span class="text-slate-400">CLASS:</span>
+              <span class="text-slate-200">Creative Technologist</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">PREFERRED STACK:</span>
+              <span class="text-cyan-300">TypeScript / Go / Python</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">CURRENT FOCUS:</span>
+              <span class="text-emerald-400">Distributed Web Apps & AI UX</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">CORE MOTTO:</span>
+              <span class="text-amber-300 italic">"Clean code, purposeful living."</span>
+            </div>
+          </div>
+
+          <!-- Social / Quick Connect links with Copy functionality -->
+          <div class="space-y-3">
+            <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Communication Channels</div>
+            <div class="grid grid-cols-2 gap-2 font-mono text-xs">
+              <button onclick="copyToClipboard('github.com/coder-handle', 'GitHub Handle Copied!')" class="p-2 rounded bg-slate-950/70 border border-slate-800 hover:border-cyan-500/40 text-slate-300 flex items-center justify-between group transition">
+                <span class="flex items-center gap-1.5"><i data-lucide="github" class="w-3.5 h-3.5 text-cyan-400"></i> GitHub</span>
+                <i data-lucide="copy" class="w-3 h-3 text-slate-500 group-hover:text-cyan-400 transition"></i>
+              </button>
+              <button onclick="copyToClipboard('hello@cybercoder.dev', 'Email Copied to Clipboard!')" class="p-2 rounded bg-slate-950/70 border border-slate-800 hover:border-cyan-500/40 text-slate-300 flex items-center justify-between group transition">
+                <span class="flex items-center gap-1.5"><i data-lucide="mail" class="w-3.5 h-3.5 text-rose-400"></i> Email</span>
+                <i data-lucide="copy" class="w-3 h-3 text-slate-500 group-hover:text-cyan-400 transition"></i>
+              </button>
+              <button onclick="copyToClipboard('linkedin.com/in/arif-dev', 'LinkedIn URL Copied!')" class="p-2 rounded bg-slate-950/70 border border-slate-800 hover:border-cyan-500/40 text-slate-300 flex items-center justify-between group transition">
+                <span class="flex items-center gap-1.5"><i data-lucide="linkedin" class="w-3.5 h-3.5 text-blue-400"></i> LinkedIn</span>
+                <i data-lucide="copy" class="w-3 h-3 text-slate-500 group-hover:text-cyan-400 transition"></i>
+              </button>
+              <button onclick="copyToClipboard('discord: cyber_operative#0001', 'Discord Tag Copied!')" class="p-2 rounded bg-slate-950/70 border border-slate-800 hover:border-cyan-500/40 text-slate-300 flex items-center justify-between group transition">
+                <span class="flex items-center gap-1.5"><i data-lucide="message-square" class="w-3.5 h-3.5 text-violet-400"></i> Discord</span>
+                <i data-lucide="copy" class="w-3 h-3 text-slate-500 group-hover:text-cyan-400 transition"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Skills Matrix & Philosophy -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="bg-slate-900/80 border border-slate-800/90 rounded-xl p-6 space-y-4">
+            <h3 class="text-sm font-mono font-bold text-cyan-300 tracking-wider flex items-center gap-2">
+              <i data-lucide="cpu" class="w-4 h-4 text-cyan-400"></i> TECHNICAL PROFICIENCIES // CAPABILITIES
+            </h3>
+
+            <!-- Skill bars -->
+            <div class="space-y-3 font-mono text-xs">
+              <div>
+                <div class="flex justify-between text-slate-300 mb-1">
+                  <span>Full-Stack Development (React, Node, Next.js, Tailwind)</span>
+                  <span class="text-cyan-400">92%</span>
+                </div>
+                <div class="w-full bg-slate-950 rounded-full h-1.5 overflow-hidden">
+                  <div class="bg-cyan-400 h-full rounded-full" style="width: 92%"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-slate-300 mb-1">
+                  <span>System Architecture & API Engineering (REST, GraphQL, DBs)</span>
+                  <span class="text-violet-400">86%</span>
+                </div>
+                <div class="w-full bg-slate-950 rounded-full h-1.5 overflow-hidden">
+                  <div class="bg-violet-400 h-full rounded-full" style="width: 86%"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-slate-300 mb-1">
+                  <span>Data Structures, Algorithms & Problem Solving</span>
+                  <span class="text-emerald-400">88%</span>
+                </div>
+                <div class="w-full bg-slate-950 rounded-full h-1.5 overflow-hidden">
+                  <div class="bg-emerald-400 h-full rounded-full" style="width: 88%"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-slate-300 mb-1">
+                  <span>Cloud Platforms, DevOps & Docker containerization</span>
+                  <span class="text-amber-400">78%</span>
+                </div>
+                <div class="w-full bg-slate-950 rounded-full h-1.5 overflow-hidden">
+                  <div class="bg-amber-400 h-full rounded-full" style="width: 78%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tech Badges -->
+            <div class="pt-3 border-t border-slate-800">
+              <div class="text-[11px] font-mono text-slate-400 mb-2">RUNNING PROTOCOLS & TOOLING:</div>
+              <div class="flex flex-wrap gap-1.5">
+                <span class="px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-xs font-mono text-slate-300">JavaScript (ESNext)</span>
+                <span class="px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-xs font-mono text-cyan-300">TypeScript</span>
+                <span class="px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-xs font-mono text-emerald-300">Python</span>
+                <span class="px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-xs font-mono text-blue-300">C/C++</span>
+                <span class="px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-xs font-mono text-violet-300">PostgreSQL</span>
+                <span class="px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-xs font-mono text-pink-300">Linux / Bash</span>
+                <span class="px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-xs font-mono text-amber-300">Git / GitHub</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Philosophy Snippet -->
+          <div class="bg-gradient-to-r from-slate-900/90 to-cyan-950/30 border border-cyan-500/20 rounded-xl p-5 flex items-start gap-3">
+            <i data-lucide="quote" class="w-6 h-6 text-cyan-400 shrink-0 mt-0.5"></i>
+            <div>
+              <h4 class="text-xs font-mono text-cyan-300 font-bold uppercase">Engineering Philosophy</h4>
+              <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                "Writing software is like writing modern poetry—brevity, rhythm, and clarity produce wonders. Every bug conquered is an evolution in thought."
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="dreams" class="glass-card rounded-2xl p-6 sm:p-8 space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded bg-amber-400 shadow-glow-cyan"></span>
+            <h2 class="text-xl font-bold text-white font-mono tracking-wide flex items-center gap-2">
+              DREAM_PROTOCOL // ROADMAP & HORIZONS
+            </h2>
+          </div>
+          <p class="text-xs text-slate-400 font-mono mt-1">Grand visions, life-defining quests, and upcoming milestones.</p>
+        </div>
+
+        <button onclick="openAddDreamModal()" class="px-3.5 py-2 rounded-lg bg-amber-500/20 border border-amber-500/40 hover:bg-amber-500/30 text-amber-300 font-mono text-xs flex items-center gap-1.5 transition">
+          <i data-lucide="sparkle" class="w-3.5 h-3.5"></i>
+          <span>LOG NEW DREAM</span>
+        </button>
+      </div>
+
+      <!-- Dreams Cards / Roadmap -->
+      <div id="dreamsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-slate-800/80 mt-16 bg-[#080b11]/90 font-mono text-xs text-slate-400 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center space-x-2">
+        <i data-lucide="code-2" class="w-4 h-4 text-cyan-400"></i>
+        <span>DEV_HUB // BUILT WITH INTENT & OBSESSION</span>
+      </div>
+      <div class="text-slate-500 text-[11px]">
+        Designed for thinkers, coders & dreamers. All local data stored on your device.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Photo Lightbox Modal -->
+  <div id="lightboxModal" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="relative max-w-4xl w-full bg-slate-900 border border-slate-700 rounded-2xl overflow-hidden shadow-2xl">
+      <button onclick="closeLightbox()" class="absolute top-3 right-3 z-10 p-2 rounded-lg bg-slate-950/80 text-slate-300 hover:text-white border border-slate-700">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <div class="max-h-[70vh] overflow-hidden flex items-center justify-center bg-black">
+        <img id="lightboxImg" src="" alt="Full view" class="w-full h-auto object-contain max-h-[70vh]">
+      </div>
+      <div class="p-4 sm:p-6 bg-slate-950/95 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div>
+          <div id="lightboxCategory" class="text-xs font-mono text-cyan-400 uppercase tracking-wider">CATEGORY</div>
+          <h3 id="lightboxTitle" class="text-lg font-bold text-white font-mono">Title</h3>
+          <p id="lightboxDesc" class="text-xs text-slate-400 mt-1 font-sans">Description here</p>
+        </div>
+        <div class="text-right text-xs font-mono text-slate-500 flex sm:flex-col gap-2 sm:gap-0">
+          <span id="lightboxDate">2026-09-19</span>
+          <span class="text-emerald-400">ENCODED_RAW</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Photo Modal -->
+  <div id="addPhotoModal" class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="font-mono text-sm font-bold text-cyan-400 flex items-center gap-2">
+          <i data-lucide="image-plus" class="w-4 h-4"></i> UPLOAD TO VISUAL ARCHIVE
+        </h3>
+        <button onclick="closeAddPhotoModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <form id="photoForm" onsubmit="handleAddPhoto(event)" class="space-y-3 font-mono text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1">IMAGE URL OR UPLOAD FILE</label>
+          <input type="url" id="photoUrlInput" placeholder="https://images.unsplash.com/..." class="w-full px-3 py-2 rounded bg-slate-950 border border-slate-800 text-slate-200 focus:border-cyan-400 outline-none">
+          <div class="mt-2 text-center text-slate-500">- OR -</div>
+          <input type="file" id="photoFileInput" accept="image/*" class="w-full mt-1 text-slate-400 file:mr-3 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-cyan-950 file:text-cyan-300 hover:file:bg-cyan-900">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">CAPTION / TITLE</label>
+          <input type="text" id="photoTitleInput" required placeholder="Late Night Compile..." class="w-full px-3 py-2 rounded bg-slate-950 border border-slate-800 text-slate-200 focus:border-cyan-400 outline-none">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">CATEGORY</label>
+          <select id="photoCategoryInput" class="w-full px-3 py-2 rounded bg-slate-950 border border-slate-800 text-slate-200 focus:border-cyan-400 outline-none">
+            <option value="Workspace">Workspace</option>
+            <option value="Life & Travel">Life & Travel</option>
+            <option value="Creative">Creative</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">SUBTITLE / NOTES</label>
+          <input type="text" id="photoDescInput" placeholder="Shot at high ISO during focus sprint" class="w-full px-3 py-2 rounded bg-slate-950 border border-slate-800 text-slate-200 focus:border-cyan-400 outline-none">
+        </div>
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="closeAddPhotoModal()" class="px-4 py-2 rounded bg-slate-800 text-slate-300 hover:bg-slate-700">CANCEL</button>
+          <button type="submit" class="px-4 py-2 rounded bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold shadow-glow-cyan">SAVE PHOTO</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Dream Modal -->
+  <div id="addDreamModal" class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="font-mono text-sm font-bold text-amber-400 flex items-center gap-2">
+          <i data-lucide="compass" class="w-4 h-4"></i> LOG FUTURE VISION / DREAM
+        </h3>
+        <button onclick="closeAddDreamModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <form id="dreamForm" onsubmit="handleAddDream(event)" class="space-y-3 font-mono text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1">DREAM TITLE</label>
+          <input type="text" id="dreamTitleInput" required placeholder="Launch an Open-Source OS / Travel to Alps" class="w-full px-3 py-2 rounded bg-slate-950 border border-slate-800 text-slate-200 focus:border-amber-400 outline-none">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">CATEGORY</label>
+          <select id="dreamCategoryInput" class="w-full px-3 py-2 rounded bg-slate-950 border border-slate-800 text-slate-200 focus:border-amber-400 outline-none">
+            <option value="Tech Mastery">Tech Mastery</option>
+            <option value="Product Launch">Product Launch</option>
+            <option value="Life & Expedition">Life & Expedition</option>
+            <option value="Legacy & Mentorship">Legacy & Mentorship</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">TARGET TIMELINE</label>
+          <input type="text" id="dreamTargetInput" placeholder="e.g. Q4 2027 or By Age 28" class="w-full px-3 py-2 rounded bg-slate-950 border border-slate-800 text-slate-200 focus:border-amber-400 outline-none">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">STATUS</label>
+          <select id="dreamStatusInput" class="w-full px-3 py-2 rounded bg-slate-950 border border-slate-800 text-slate-200 focus:border-amber-400 outline-none">
+            <option value="In Progress">In Progress</option>
+            <option value="Planning">Planning</option>
+            <option value="Unlocked">Unlocked / Achieved</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">VISION DESCRIPTION</label>
+          <textarea id="dreamDescInput" rows="3" required placeholder="Why does this matter? What is the master plan?" class="w-full px-3 py-2 rounded bg-slate-950 border border-slate-800 text-slate-200 focus:border-amber-400 outline-none font-sans"></textarea>
+        </div>
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="closeAddDreamModal()" class="px-4 py-2 rounded bg-slate-800 text-slate-300 hover:bg-slate-700">CANCEL</button>
+          <button type="submit" class="px-4 py-2 rounded bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold">LOCK QUEST</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Message Overlay -->
+  <div id="toastMessage" class="fixed bottom-6 right-6 z-[120] bg-slate-900 border border-cyan-400 text-white px-4 py-3 rounded-xl shadow-glow-cyan text-xs font-mono flex items-center gap-2 transform translate-y-20 opacity-0 pointer-events-none transition-all duration-300">
+    <i data-lucide="terminal" class="w-4 h-4 text-cyan-400"></i>
+    <span id="toastText">System Updated</span>
+  </div>
+
+  <script>
+    // Sound FX configuration with Tone.js
+    let soundEnabled = true;
+    let synth = null;
+
+    function initAudio() {
+      if (!synth && window.Tone) {
+        synth = new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: "triangle" },
+          envelope: { attack: 0.005, decay: 0.1, sustain: 0.05, release: 0.1 }
+        }).toDestination();
+        synth.volume.value = -12;
+      }
+    }
+
+    function playBeep(note = "C5") {
+      if (!soundEnabled) return;
+      try {
+        if (!synth) initAudio();
+        if (Tone.context.state !== 'running') {
+          Tone.start();
+        }
+        synth.triggerAttackRelease(note, "16n");
+      } catch (e) {
+        // Audio fallback
+      }
+    }
+
+    function toggleAudio() {
+      soundEnabled = !soundEnabled;
+      const icon = document.getElementById('soundIcon');
+      if (soundEnabled) {
+        icon.setAttribute('data-lucide', 'volume-2');
+        showToast("AUDIO SYNTH // ACTIVATED");
+        playBeep("G5");
+      } else {
+        icon.setAttribute('data-lucide', 'volume-x');
+        showToast("AUDIO SYNTH // MUTED");
+      }
+      lucide.createIcons();
+    }
+
+    const DEFAULT_TODOS = [
+      { id: 1, text: "Solve 2 Graph Algorithms on LeetCode", category: "Code", priority: "High", completed: true, timestamp: "08:30" },
+      { id: 2, text: "Refactor backend API endpoints with async workers", category: "Code", priority: "High", completed: false, timestamp: "11:00" },
+      { id: 3, text: "Deep work reading: High-Performance Browser Networking", category: "Study", priority: "Medium", completed: false, timestamp: "14:15" },
+      { id: 4, text: "Gym Session: Heavy Deadlifts & 5k cardio sprint", category: "Health", priority: "Medium", completed: true, timestamp: "17:30" },
+      { id: 5, text: "Brew artisan pour-over coffee & weekly reflection journal", category: "Life", priority: "Low", completed: false, timestamp: "20:00" }
+    ];
+
+    const DEFAULT_GALLERY = [
+      {
+        id: 1,
+        title: "Matrix Battle Station",
+        category: "Workspace",
+        desc: "Triple monitor rig, mechanical split keyboard, warm ambient bias lighting.",
+        url: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&auto=format&fit=crop&q=80",
+        date: "2026-08-14"
+      },
+      {
+        id: 2,
+        title: "Alpine Trekking Expedition",
+        category: "Life & Travel",
+        desc: "Refreshing the neural synapses amidst misty clouds and jagged rock ridges.",
+        url: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&auto=format&fit=crop&q=80",
+        date: "2026-07-21"
+      },
+      {
+        id: 3,
+        title: "Late Night Code Sprint",
+        category: "Workspace",
+        desc: "Terminal prompts, dark theme UI, zero distractions past 2:00 AM.",
+        url: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&auto=format&fit=crop&q=80",
+        date: "2026-09-02"
+      },
+      {
+        id: 4,
+        title: "Cyberpunk City Reflections",
+        category: "Creative",
+        desc: "Rain-slicked neon streets reminding us of sci-fi futures we are actively building.",
+        url: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=800&auto=format&fit=crop&q=80",
+        date: "2026-09-10"
+      },
+      {
+        id: 5,
+        title: "Minimalist Mobile Setup",
+        category: "Workspace",
+        desc: "Coffee shop coding session with laptop, noise-canceling headphones, and notebook.",
+        url: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&auto=format&fit=crop&q=80",
+        date: "2026-08-28"
+      },
+      {
+        id: 6,
+        title: "Sunset Serenity",
+        category: "Life & Travel",
+        desc: "Disconnecting to reconnect. Watching the gradient sky fade over the horizon.",
+        url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80",
+        date: "2026-06-30"
+      }
+    ];
+
+    const DEFAULT_DREAMS = [
+      {
+        id: 1,
+        title: "Launch Global Open-Source Dev Tool",
+        category: "Tech Mastery",
+        target: "Target: 2027",
+        status: "In Progress",
+        desc: "Design and maintain a lightning-fast CLI engine used by over 50,000 developers globally with robust telemetry and documentation.",
+        color: "cyan"
+      },
+      {
+        id: 2,
+        title: "Summit the Himalayas & Nordic Aurora Tour",
+        category: "Life & Expedition",
+        target: "Target: 2028",
+        status: "Planning",
+        desc: "Experience the Northern Lights in Tromsø, Norway and finish a high-altitude trek across Nepal base camps.",
+        color: "amber"
+      },
+      {
+        id: 3,
+        title: "Establish a Tech Incubator for Young Coders",
+        category: "Legacy & Mentorship",
+        target: "Target: 2029",
+        status: "Planning",
+        desc: "Provide free mentorship, compute resources, and scholarships to talented young programmers who lack financial access.",
+        color: "violet"
+      },
+      {
+        id: 4,
+        title: "Build & Deploy Autonomous AI Agent Swarm",
+        category: "Product Launch",
+        target: "Target: 2026 Q4",
+        status: "In Progress",
+        desc: "Engineer a local-first cooperative multi-agent system that helps automate complex scientific research aggregation.",
+        color: "emerald"
+      }
+    ];
+
+    // Local Storage Loading
+    let todos = JSON.parse(localStorage.getItem('cyber_todos')) || DEFAULT_TODOS;
+    let gallery = JSON.parse(localStorage.getItem('cyber_gallery')) || DEFAULT_GALLERY;
+    let dreams = JSON.parse(localStorage.getItem('cyber_dreams')) || DEFAULT_DREAMS;
+    let currentFilter = 'all';
+    let currentGalleryCategory = 'All';
+
+    function saveTodos() {
+      localStorage.setItem('cyber_todos', JSON.stringify(todos));
+    }
+    function saveGallery() {
+      localStorage.setItem('cyber_gallery', JSON.stringify(gallery));
+    }
+    function saveDreams() {
+      localStorage.setItem('cyber_dreams', JSON.stringify(dreams));
+    }
+
+    function updateClock() {
+      const clockEl = document.getElementById('liveClock');
+      if (!clockEl) return;
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      clockEl.textContent = `${hours}:${minutes}:${seconds} LCL`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    function showToast(text) {
+      const toast = document.getElementById('toastMessage');
+      const toastText = document.getElementById('toastText');
+      toastText.textContent = text;
+      toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+      }, 2600);
+    }
+
+    function copyToClipboard(text, customMessage = "Copied to clipboard!") {
+      // Using execCommand for iframe compatibility
+      const tempInput = document.createElement('textarea');
+      tempInput.value = text;
+      tempInput.style.position = 'fixed';
+      tempInput.style.opacity = '0';
+      document.body.appendChild(tempInput);
+      tempInput.focus();
+      tempInput.select();
+      try {
+        document.execCommand('copy');
+        showToast(`// ${customMessage}`);
+        playBeep("E5");
+      } catch (err) {
+        showToast("// Copy failed");
+      }
+      document.body.removeChild(tempInput);
+    }
+
+    function renderTodos() {
+      const todoList = document.getElementById('todoList');
+      const filtered = todos.filter(task => {
+        if (currentFilter === 'active') return !task.completed;
+        if (currentFilter === 'completed') return task.completed;
+        return true;
+      });
+
+      // Update counters
+      const total = todos.length;
+      const completed = todos.filter(t => t.completed).length;
+      const active = total - completed;
+
+      document.getElementById('count-all').textContent = total;
+      document.getElementById('count-active').textContent = active;
+      document.getElementById('count-completed').textContent = completed;
+      document.getElementById('statCompletedCount').textContent = completed;
+
+      // Update progress bar
+      const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+      document.getElementById('progressBar').style.width = `${percent}%`;
+      document.getElementById('progressText').textContent = `${percent}% COMPLETED (${completed}/${total})`;
+
+      if (filtered.length === 0) {
+        todoList.innerHTML = `
+          <div class="text-center py-10 border border-dashed border-slate-800 rounded-xl">
+            <i data-lucide="check-circle-2" class="w-8 h-8 text-slate-600 mx-auto mb-2"></i>
+            <p class="font-mono text-xs text-slate-500">// ALL PROCESSES EXECUTED. SYSTEM IDLE.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      todoList.innerHTML = filtered.map(item => {
+        const priColor = item.priority === 'High' ? 'text-rose-400 bg-rose-950/60 border-rose-500/40' :
+                         item.priority === 'Medium' ? 'text-amber-400 bg-amber-950/60 border-amber-500/40' :
+                         'text-emerald-400 bg-emerald-950/60 border-emerald-500/40';
+
+        const catColor = item.category === 'Code' ? 'text-cyan-400' :
+                         item.category === 'Study' ? 'text-violet-400' :
+                         item.category === 'Health' ? 'text-emerald-400' : 'text-slate-400';
+
+        return `
+          <div class="group flex items-center justify-between p-3 sm:p-3.5 rounded-xl bg-slate-900/90 border ${item.completed ? 'border-emerald-500/20 bg-emerald-950/5' : 'border-slate-800/90 hover:border-cyan-500/40'} transition-all duration-200">
+            <div class="flex items-center gap-3 min-w-0 flex-1">
+              <button onclick="toggleTodo(${item.id})" class="shrink-0 w-5 h-5 rounded-md border flex items-center justify-center transition ${item.completed ? 'bg-emerald-500 border-emerald-400 text-slate-950' : 'border-slate-700 bg-slate-950 hover:border-cyan-400'}">
+                ${item.completed ? '<i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>' : ''}
+              </button>
+              <div class="min-w-0">
+                <span class="text-xs sm:text-sm font-sans ${item.completed ? 'line-through text-slate-500' : 'text-slate-200 font-medium'} block truncate">
+                  ${escapeHtml(item.text)}
+                </span>
+                <div class="flex items-center gap-2 mt-0.5 font-mono text-[10px]">
+                  <span class="${catColor}">[${item.category}]</span>
+                  <span class="text-slate-600">•</span>
+                  <span class="text-slate-500">${item.timestamp || 'LOGGED'}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0 ml-3">
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono border ${priColor}">
+                ${item.priority}
+              </span>
+              <button onclick="deleteTodo(${item.id})" class="p-1.5 rounded-lg text-slate-600 hover:text-rose-400 hover:bg-rose-950/30 transition" title="Purge task">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function handleAddTask(e) {
+      e.preventDefault();
+      const input = document.getElementById('taskInput');
+      const cat = document.getElementById('taskCategory').value;
+      const pri = document.getElementById('taskPriority').value;
+      const text = input.value.trim();
+
+      if (!text) return;
+
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+      const newTask = {
+        id: Date.now(),
+        text: text,
+        category: cat,
+        priority: pri,
+        completed: false,
+        timestamp: timeStr
+      };
+
+      todos.unshift(newTask);
+      saveTodos();
+      input.value = '';
+      renderTodos();
+      showToast(`TASK DEPLOYED // [${cat}]`);
+      playBeep("A4");
+    }
+
+    function toggleTodo(id) {
+      todos = todos.map(t => {
+        if (t.id === id) {
+          const nextState = !t.completed;
+          if (nextState) playBeep("C6");
+          else playBeep("D4");
+          return { ...t, completed: nextState };
+        }
+        return t;
+      });
+      saveTodos();
+      renderTodos();
+    }
+
+    function deleteTodo(id) {
+      todos = todos.filter(t => t.id !== id);
+      saveTodos();
+      renderTodos();
+      showToast("TASK PURGED FROM QUEUE");
+      playBeep("F4");
+    }
+
+    function setFilter(type) {
+      currentFilter = type;
+      document.querySelectorAll('#filter-all, #filter-active, #filter-completed').forEach(btn => {
+        btn.className = "px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white transition";
+      });
+      const activeBtn = document.getElementById(`filter-${type}`);
+      if (activeBtn) {
+        activeBtn.className = "px-3 py-1.5 rounded-lg border border-cyan-500/40 bg-cyan-500/20 text-cyan-300 transition";
+      }
+      renderTodos();
+    }
+
+    function renderGallery() {
+      const grid = document.getElementById('galleryGrid');
+      const filtered = gallery.filter(item => {
+        if (currentGalleryCategory === 'All') return true;
+        return item.category === currentGalleryCategory;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-12 border border-slate-800 rounded-xl">
+            <i data-lucide="image-off" class="w-8 h-8 text-slate-600 mx-auto mb-2"></i>
+            <p class="font-mono text-xs text-slate-500">// NO FRAMES DISCOVERED IN THIS DIRECTORY.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      grid.innerHTML = filtered.map(photo => {
+        return `
+          <div onclick="openLightbox(${photo.id})" class="group cursor-pointer bg-slate-900/90 border border-slate-800/90 hover:border-violet-500/50 rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-glow-violet flex flex-col">
+            <div class="relative aspect-video overflow-hidden bg-slate-950">
+              <img 
+                src="${photo.url}" 
+                alt="${escapeHtml(photo.title)}" 
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                onerror="this.src='https://placehold.co/600x400/0f172a/8b5cf6?text=PHOTO_SIGNAL_LOST'"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-70"></div>
+              <span class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded text-[10px] font-mono bg-black/70 text-violet-300 border border-violet-500/30 backdrop-blur-sm">
+                ${photo.category}
+              </span>
+              <button onclick="event.stopPropagation(); deletePhoto(${photo.id})" class="absolute top-2.5 left-2.5 p-1 rounded bg-black/60 text-slate-400 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition">
+                <i data-lucide="trash" class="w-3 h-3"></i>
+              </button>
+            </div>
+            <div class="p-3.5 flex-1 flex flex-col justify-between">
+              <div>
+                <h4 class="font-mono text-xs font-bold text-slate-200 group-hover:text-violet-300 transition line-clamp-1">${escapeHtml(photo.title)}</h4>
+                <p class="text-[11px] text-slate-400 font-sans mt-1 line-clamp-2">${escapeHtml(photo.desc || '')}</p>
+              </div>
+              <div class="mt-3 pt-2 border-t border-slate-800/70 flex justify-between items-center text-[10px] font-mono text-slate-500">
+                <span>TIMESTAMP: ${photo.date || 'RECENT'}</span>
+                <span class="text-violet-400 flex items-center gap-1 group-hover:underline">
+                  VIEW_RAW <i data-lucide="maximize-2" class="w-2.5 h-2.5"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function filterGallery(category) {
+      currentGalleryCategory = category;
+      document.querySelectorAll('.gallery-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-cat') === category) {
+          btn.className = "gallery-filter-btn px-2.5 py-1 rounded bg-violet-600/30 text-violet-300 border border-violet-500/40";
+        } else {
+          btn.className = "gallery-filter-btn px-2.5 py-1 rounded text-slate-400 hover:text-white";
+        }
+      });
+      renderGallery();
+    }
+
+    function openLightbox(id) {
+      const photo = gallery.find(p => p.id === id);
+      if (!photo) return;
+      document.getElementById('lightboxImg').src = photo.url;
+      document.getElementById('lightboxTitle').textContent = photo.title;
+      document.getElementById('lightboxDesc').textContent = photo.desc || 'No metadata provided.';
+      document.getElementById('lightboxCategory').textContent = photo.category;
+      document.getElementById('lightboxDate').textContent = photo.date || 'LOGGED_RAW';
+      
+      const modal = document.getElementById('lightboxModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      playBeep("B4");
+    }
+
+    function closeLightbox() {
+      const modal = document.getElementById('lightboxModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function openAddPhotoModal() {
+      const modal = document.getElementById('addPhotoModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeAddPhotoModal() {
+      const modal = document.getElementById('addPhotoModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function handleAddPhoto(e) {
+      e.preventDefault();
+      const urlInput = document.getElementById('photoUrlInput');
+      const fileInput = document.getElementById('photoFileInput');
+      const title = document.getElementById('photoTitleInput').value.trim();
+      const cat = document.getElementById('photoCategoryInput').value;
+      const desc = document.getElementById('photoDescInput').value.trim();
+
+      const processPhoto = (imgUrl) => {
+        const newPhoto = {
+          id: Date.now(),
+          title: title,
+          category: cat,
+          desc: desc,
+          url: imgUrl,
+          date: new Date().toISOString().split('T')[0]
+        };
+        gallery.unshift(newPhoto);
+        saveGallery();
+        renderGallery();
+        closeAddPhotoModal();
+        e.target.reset();
+        showToast("FRAME COMMITTED TO ARCHIVE");
+        playBeep("G5");
+      };
+
+      if (fileInput.files && fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          processPhoto(evt.target.result);
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+      } else if (urlInput.value.trim()) {
+        processPhoto(urlInput.value.trim());
+      } else {
+        showToast("// ERROR: Supply an image URL or file");
+      }
+    }
+
+    function deletePhoto(id) {
+      gallery = gallery.filter(p => p.id !== id);
+      saveGallery();
+      renderGallery();
+      showToast("FRAME EXPUNGED");
+    }
+
+    function renderDreams() {
+      const container = document.getElementById('dreamsContainer');
+      document.getElementById('statDreamsCount').textContent = dreams.length;
+
+      if (dreams.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full text-center py-10 border border-slate-800 rounded-xl">
+            <i data-lucide="compass" class="w-8 h-8 text-slate-600 mx-auto mb-2"></i>
+            <p class="font-mono text-xs text-slate-500">// HORIZONS VACANT. LOG YOUR FIRST QUEST.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = dreams.map(dream => {
+        const isUnlocked = dream.status === 'Unlocked' || dream.status === 'Achieved';
+        const statusBadge = isUnlocked 
+          ? 'bg-emerald-950/80 border-emerald-500/40 text-emerald-300' 
+          : dream.status === 'In Progress' 
+          ? 'bg-cyan-950/80 border-cyan-500/40 text-cyan-300' 
+          : 'bg-amber-950/80 border-amber-500/40 text-amber-300';
+
+        return `
+          <div class="relative bg-slate-900/90 border border-slate-800 hover:border-amber-500/40 rounded-xl p-5 transition-all duration-200 flex flex-col justify-between group">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded border ${statusBadge} flex items-center gap-1">
+                  ${isUnlocked ? '<i data-lucide="check-check" class="w-3 h-3"></i>' : '<i data-lucide="loader" class="w-3 h-3 animate-spin"></i>'}
+                  ${dream.status}
+                </span>
+                <div class="flex items-center gap-2">
+                  <span class="text-[11px] font-mono text-slate-400">${escapeHtml(dream.target || 'TARGET: TBD')}</span>
+                  <button onclick="deleteDream(${dream.id})" class="text-slate-600 hover:text-rose-400 transition" title="Abandon quest">
+                    <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <span class="text-[10px] font-mono text-amber-400 uppercase tracking-wider">${dream.category}</span>
+                <h4 class="text-sm font-bold font-mono text-slate-100 group-hover:text-amber-300 transition mt-0.5">
+                  ${escapeHtml(dream.title)}
+                </h4>
+              </div>
+
+              <p class="text-xs text-slate-400 font-sans leading-relaxed">
+                ${escapeHtml(dream.desc)}
+              </p>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between font-mono text-[11px]">
+              <button onclick="toggleDreamStatus(${dream.id})" class="text-slate-400 hover:text-cyan-300 transition flex items-center gap-1">
+                <i data-lucide="refresh-cw" class="w-3 h-3"></i> CYCLE_STATE
+              </button>
+              <span class="text-slate-600">ID: #${dream.id.toString().slice(-4)}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function toggleDreamStatus(id) {
+      dreams = dreams.map(d => {
+        if (d.id === id) {
+          let next = 'Planning';
+          if (d.status === 'Planning') next = 'In Progress';
+          else if (d.status === 'In Progress') next = 'Unlocked';
+          else next = 'In Progress';
+          playBeep("F5");
+          return { ...d, status: next };
+        }
+        return d;
+      });
+      saveDreams();
+      renderDreams();
+    }
+
+    function openAddDreamModal() {
+      const modal = document.getElementById('addDreamModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeAddDreamModal() {
+      const modal = document.getElementById('addDreamModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function handleAddDream(e) {
+      e.preventDefault();
+      const title = document.getElementById('dreamTitleInput').value.trim();
+      const cat = document.getElementById('dreamCategoryInput').value;
+      const target = document.getElementById('dreamTargetInput').value.trim();
+      const status = document.getElementById('dreamStatusInput').value;
+      const desc = document.getElementById('dreamDescInput').value.trim();
+
+      const newDream = {
+        id: Date.now(),
+        title,
+        category: cat,
+        target: target || 'FUTURE_MILESTONE',
+        status,
+        desc
+      };
+
+      dreams.unshift(newDream);
+      saveDreams();
+      renderDreams();
+      closeAddDreamModal();
+      e.target.reset();
+      showToast("QUEST LOCKED INTO DESTINY");
+      playBeep("C6");
+    }
+
+    function deleteDream(id) {
+      dreams = dreams.filter(d => d.id !== id);
+      saveDreams();
+      renderDreams();
+      showToast("QUEST PURGED");
+    }
+
+    // Helper sanitization
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderTodos();
+      renderGallery();
+      renderDreams();
+      lucide.createIcons();
+
+      // Click outside modals to close
+      ['lightboxModal', 'addPhotoModal', 'addDreamModal'].forEach(modalId => {
+        const m = document.getElementById(modalId);
+        if (m) {
+          m.addEventListener('click', (e) => {
+            if (e.target === m) {
+              m.classList.add('hidden');
+              m.classList.remove('flex');
+            }
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
